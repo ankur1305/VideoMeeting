@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VideoMeeting</string>
+    <string name="app_name">Video Meeting</string>
     <string name="welcome_to">Welcome To</string>
     <string name="video_meeting_conference_app">Video Meeting | Conference App</string>
     <string name="sign_in_to_your_account">Sign In To Your Account</string>
@@ -17,4 +17,5 @@
     <string name="doe">Doe</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="already_have_an_account">Already Have An Account?</string>
+    <string name="powered_by">Powered By Ankur Singhal</string>
 </resources>

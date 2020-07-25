@@ -2,7 +2,7 @@ package com.example.videomeeting.Utilities;
 
 public class Constants {
 
-    public static final String KEY_COLLECTION = "Users";
+    public static final String KEY_COLLECTION_USERS = "Users";
     public static final String KEY_FIRST_NAME = "first_name";
     public static final String KEY_LAST_NAME = "last_name";
     public static final String KEY_EMAIL = "email";
