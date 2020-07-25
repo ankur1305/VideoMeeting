@@ -3,7 +3,6 @@ package com.example.videomeeting.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.animation.Animation;
@@ -12,8 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.videomeeting.R;
-import com.example.videomeeting.Utilities.Constants;
-import com.example.videomeeting.Utilities.PreferenceManager;
 
 public class SplashScreen extends AppCompatActivity {
 
