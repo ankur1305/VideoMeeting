@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
         getUsers();
     }
 
-    private void getUsers(){
+    private void getUsers() {
         swipeRefreshLayout.setRefreshing(true);
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         database.collection(Constants.KEY_COLLECTION_USERS)
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
     public void initiateVideoMeeting(User user) {
         if (user.token == null || user.token.trim().isEmpty())
             Toast.makeText(this, user.firstName + " " + user.lastName + " Is Not Available For Meeting", Toast.LENGTH_SHORT).show();
-        else{
+        else {
             Intent intent = new Intent(getApplicationContext(), OutgoingInvitationActivity.class);
             intent.putExtra("user", user);
             intent.putExtra("type", "video");
@@ -147,7 +147,12 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
     public void initiateAudioMeeting(User user) {
         if (user.token == null || user.token.trim().isEmpty())
             Toast.makeText(this, user.firstName + " " + user.lastName + " Is Not Available For Meeting", Toast.LENGTH_SHORT).show();
-        else
-            Toast.makeText(this, "Audio Meeting With " + user.firstName + " " + user.lastName, Toast.LENGTH_SHORT).show();
+        else {
+            Intent intent = new Intent(getApplicationContext(), OutgoingInvitationActivity.class);
+            intent.putExtra("user", user);
+            intent.putExtra("type", "audio");
+            startActivity(intent);
+        }
+
     }
 }
