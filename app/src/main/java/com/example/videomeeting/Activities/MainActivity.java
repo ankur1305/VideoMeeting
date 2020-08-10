@@ -1,12 +1,19 @@
 package com.example.videomeeting.Activities;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,11 +23,13 @@ import com.example.videomeeting.Models.User;
 import com.example.videomeeting.R;
 import com.example.videomeeting.Utilities.Constants;
 import com.example.videomeeting.Utilities.PreferenceManager;
+import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
     private UsersAdapter usersAdapter;
     private TextView textErrorMessage;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ImageView imageConference;
+
+    private int REQUEST_CODE_BATTERY_OPTIMIZATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
         setContentView(R.layout.activity_main);
 
         preferenceManager = new PreferenceManager(getApplicationContext());
+
+        imageConference = findViewById(R.id.imageConference);
 
         TextView textTitle = findViewById(R.id.textTitle);
         textTitle.setText(String.format(
@@ -67,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
         swipeRefreshLayout.setOnRefreshListener(this::getUsers);
 
         getUsers();
+        checkForBatteryOptimizations();
     }
 
     private void getUsers() {
@@ -154,5 +169,47 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
             startActivity(intent);
         }
 
+    }
+
+    @Override
+    public void onMultipleUsersAction(Boolean isMultipleUsersSelected) {
+        if (isMultipleUsersSelected) {
+            imageConference.setVisibility(View.VISIBLE);
+            imageConference.setOnClickListener(v -> {
+                Intent intent = new Intent(getApplicationContext(), OutgoingInvitationActivity.class);
+                intent.putExtra("selectedUsers", new Gson().toJson(usersAdapter.getSelectedUsers()));
+                intent.putExtra("type", "video");
+                intent.putExtra("isMultiple", true);
+                startActivity(intent);
+            });
+        } else {
+            imageConference.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkForBatteryOptimizations() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+            assert powerManager != null;
+            if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Warning");
+                builder.setMessage("Battery Optimization is enabled. It can interrupt running background services");
+                builder.setPositiveButton("Disable", (dialog, which) -> {
+                    Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                    startActivityForResult(intent, REQUEST_CODE_BATTERY_OPTIMIZATION);
+                });
+                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+                builder.create().show();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_BATTERY_OPTIMIZATION) {
+            checkForBatteryOptimizations();
+        }
     }
 }
